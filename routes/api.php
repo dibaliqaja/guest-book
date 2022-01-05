@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\GuestBookController;
 use App\Http\Controllers\ProvinceCityController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -17,3 +18,5 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('provinces', [ProvinceCityController::class, 'provinces']);
 Route::get('cities', [ProvinceCityController::class, 'cities']);
+
+Route::apiResource('guests', GuestBookController::class);
