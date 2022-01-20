@@ -45,11 +45,11 @@
                         </div>
 
                         <div class="form-group row">
-                            <label for="province" class="col-md-4 col-form-label text-md-right">Province</label>
+                            <label for="province_code" class="col-md-4 col-form-label text-md-right">Province</label>
 
                             <div class="col-md-6">
-                                <select v-model="guest.province" @change='getProvinces()' name="province" class="form-control">
-                                    <option v-for="province in provinces" :key="province.id">
+                                <select v-model="guest.province_code" @change='getCities()' name="province_code" class="form-control">
+                                    <option v-for="province in provinces" :key="province.id" :value="province.code">
                                         {{ province.name }}
                                     </option>
                                 </select>
@@ -57,11 +57,11 @@
                         </div>
 
                         <div class="form-group row">
-                            <label for="city" class="col-md-4 col-form-label text-md-right">City</label>
+                            <label for="city_code" class="col-md-4 col-form-label text-md-right">City</label>
 
                             <div class="col-md-6">
-                                <select v-model="guest.city" @change='getCities()' name="city" class="form-control">
-                                    <option v-for="city in cities" :key="city.id">
+                                <select v-model="guest.city_code" name="city_code" class="form-control">
+                                    <option v-for="city in cities" :key="city.id" :value="city.code">
                                         {{ city.name }}
                                     </option>
                                 </select>
@@ -88,9 +88,7 @@ export default {
     data() {
         return {
             guest: {},
-            province: "",
             provinces: [],
-            city: "",
             cities: [],
             errors: [],
         };
@@ -105,6 +103,7 @@ export default {
             axios.get("/api/guests/" + this.$route.params.id)
                 .then(res => {
                     this.guest = res.data.data;
+                    this.getCities();
                 }).catch(error => {
                     console.log(console.error);
                 });
@@ -118,7 +117,7 @@ export default {
                 });
         },
         getCities(){
-            axios.get('/api/cities')
+            axios.get('/api/cities/' + this.guest.province_code)
                 .then(res => {
                     this.cities = res.data
                 }).catch(error => {
@@ -128,6 +127,12 @@ export default {
         updateGuest() {
             axios.patch("/api/guests/" + this.$route.params.id , this.guest)
                 .then(res => {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: res.data.message,
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    })
                     this.$router.push({ name: "GuestbookIndex" });
                 })
                 .catch(err => this.errors = err.response.data.errors)

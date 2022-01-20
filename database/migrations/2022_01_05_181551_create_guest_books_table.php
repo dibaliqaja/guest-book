@@ -19,9 +19,18 @@ class CreateGuestBooksTable extends Migration
             $table->string('last_name');
             $table->string('organization');
             $table->text('address');
-            $table->string('province');
-            $table->string('city');
+            $table->unsignedBigInteger('province_code');
+            $table->unsignedBigInteger('city_code');
             $table->timestamps();
+
+            $table->foreign('province_code')
+                ->references('code')
+                ->on('provinces');
+
+            $table->foreign('city_code')
+                ->references('code')
+                ->on('cities');
+
         });
     }
 

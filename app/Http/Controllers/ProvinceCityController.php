@@ -23,9 +23,9 @@ class ProvinceCityController extends Controller
      * Retrieve cities data
      *
      */
-    public function cities()
+    public function cities($code)
     {
-        $data = City::get();
+        $data = City::where('code', 'LIKE', "$code%")->get();
         return response()->json($data);
     }
 }

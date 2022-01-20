@@ -31,8 +31,8 @@ class GuestBookRequest extends FormRequest
             'last_name' => 'required',
             'organization' => 'required',
             'address' => 'required',
-            'province' => 'required',
-            'city' => 'required',
+            'province_code' => 'required|exists:provinces,code',
+            'city_code' => 'required|exists:cities,code',
         ];
     }
 

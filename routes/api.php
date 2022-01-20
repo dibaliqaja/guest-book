@@ -17,6 +17,6 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('provinces', [ProvinceCityController::class, 'provinces']);
-Route::get('cities', [ProvinceCityController::class, 'cities']);
+Route::get('cities/{code}', [ProvinceCityController::class, 'cities']);
 
 Route::apiResource('guests', GuestBookController::class);

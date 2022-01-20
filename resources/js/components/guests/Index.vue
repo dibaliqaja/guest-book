@@ -1,12 +1,12 @@
 <template>
     <div>
         <div class="col-xl-12 col-lg-12">
-            <div class="alert alert-warning alert-dismissible fade show" role="alert" v-if="showMessage">
+            <!-- <div class="alert alert-warning alert-dismissible fade show" role="alert" v-if="showMessage">
                 {{ message }}
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
-            </div>
+            </div> -->
 
             <div class="card shadow mb-4">
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
@@ -43,8 +43,8 @@
                                 <td>{{ guest.last_name }}</td>
                                 <td>{{ guest.organization }}</td>
                                 <td>{{ guest.address }}</td>
-                                <td>{{ guest.province }}</td>
-                                <td>{{ guest.city }}</td>
+                                <td>{{ guest.provinces.name }}</td>
+                                <td>{{ guest.cities.name }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -59,7 +59,6 @@ export default {
     data() {
         return {
             guests: [],
-            showMessage: false,
         }
     },
     created() {
@@ -75,11 +74,26 @@ export default {
                 })
         },
         deleteGuest(id) {
-            axios.delete("api/guests/" + id).then(res => {
-                this.showMessage = true;
-                this.message = res.data.message;
-                this.getGuests();
-            });
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    axios.delete("api/guests/" + id).then(res => {
+                        Swal.fire(
+                            'Deleted!',
+                            res.data.message,
+                            'success'
+                        )
+                        this.getGuests();
+                    });
+                }
+            })
         }
     }
 }

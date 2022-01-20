@@ -13,16 +13,14 @@ class CreateProvincesCitiesTable extends Migration
      */
     public function up()
     {
-        Schema::create('provinces', function (Blueprint $table) {
-            $table->id();
-            $table->integer('code')->unique();
+        Schema::create('provinces', function (Blueprint $table) {            
+            $table->unsignedBigInteger('code')->primary();
             $table->string('name');
             $table->timestamps();
         });
 
         Schema::create('cities', function (Blueprint $table) {
-            $table->id();
-            $table->integer('code')->unique();
+            $table->unsignedBigInteger('code')->primary();
             $table->string('name');
             $table->timestamps();
         });

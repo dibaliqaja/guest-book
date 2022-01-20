@@ -5351,9 +5351,7 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       guest: {},
-      province: "",
       provinces: [],
-      city: "",
       cities: [],
       errors: []
     };
@@ -5375,7 +5373,7 @@ __webpack_require__.r(__webpack_exports__);
     getCities: function getCities() {
       var _this2 = this;
 
-      axios.get('/api/cities').then(function (res) {
+      axios.get('/api/cities/' + this.guest.province_code).then(function (res) {
         _this2.cities = res.data;
       })["catch"](function (error) {
         console.log(console.error);
@@ -5385,6 +5383,13 @@ __webpack_require__.r(__webpack_exports__);
       var _this3 = this;
 
       axios.post("/api/guests", this.guest).then(function (res) {
+        Swal.fire({
+          title: 'Success!',
+          text: res.data.message,
+          icon: 'success',
+          confirmButtonText: 'OK'
+        });
+
         _this3.$router.push({
           name: "GuestbookFrontIndex"
         });
@@ -5454,18 +5459,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
     return {
-      guests: [],
-      showMessage: false
+      guests: []
     };
   },
   created: function created() {
@@ -5479,16 +5476,6 @@ __webpack_require__.r(__webpack_exports__);
         _this.guests = res.data.data;
       })["catch"](function (error) {
         console.log(error);
-      });
-    },
-    deleteGuest: function deleteGuest(id) {
-      var _this2 = this;
-
-      axios["delete"]("api/guests/" + id).then(function (res) {
-        _this2.showMessage = true;
-        _this2.message = res.data.message;
-
-        _this2.getGuests();
       });
     }
   }
@@ -5596,9 +5583,7 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       guest: {},
-      province: "",
       provinces: [],
-      city: "",
       cities: [],
       errors: []
     };
@@ -5620,7 +5605,7 @@ __webpack_require__.r(__webpack_exports__);
     getCities: function getCities() {
       var _this2 = this;
 
-      axios.get('/api/cities').then(function (res) {
+      axios.get('/api/cities/' + this.guest.province_code).then(function (res) {
         _this2.cities = res.data;
       })["catch"](function (error) {
         console.log(console.error);
@@ -5630,6 +5615,13 @@ __webpack_require__.r(__webpack_exports__);
       var _this3 = this;
 
       axios.post("/api/guests", this.guest).then(function (res) {
+        Swal.fire({
+          title: 'Success!',
+          text: res.data.message,
+          icon: 'success',
+          confirmButtonText: 'OK'
+        });
+
         _this3.$router.push({
           name: "GuestbookIndex"
         });
@@ -5744,9 +5736,7 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       guest: {},
-      province: "",
       provinces: [],
-      city: "",
       cities: [],
       errors: []
     };
@@ -5762,6 +5752,8 @@ __webpack_require__.r(__webpack_exports__);
 
       axios.get("/api/guests/" + this.$route.params.id).then(function (res) {
         _this.guest = res.data.data;
+
+        _this.getCities();
       })["catch"](function (error) {
         console.log(console.error);
       });
@@ -5778,7 +5770,7 @@ __webpack_require__.r(__webpack_exports__);
     getCities: function getCities() {
       var _this3 = this;
 
-      axios.get('/api/cities').then(function (res) {
+      axios.get('/api/cities/' + this.guest.province_code).then(function (res) {
         _this3.cities = res.data;
       })["catch"](function (error) {
         console.log(console.error);
@@ -5788,6 +5780,13 @@ __webpack_require__.r(__webpack_exports__);
       var _this4 = this;
 
       axios.patch("/api/guests/" + this.$route.params.id, this.guest).then(function (res) {
+        Swal.fire({
+          title: 'Success!',
+          text: res.data.message,
+          icon: 'success',
+          confirmButtonText: 'OK'
+        });
+
         _this4.$router.push({
           name: "GuestbookIndex"
         });
@@ -5872,8 +5871,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
     return {
-      guests: [],
-      showMessage: false
+      guests: []
     };
   },
   created: function created() {
@@ -5892,11 +5890,22 @@ __webpack_require__.r(__webpack_exports__);
     deleteGuest: function deleteGuest(id) {
       var _this2 = this;
 
-      axios["delete"]("api/guests/" + id).then(function (res) {
-        _this2.showMessage = true;
-        _this2.message = res.data.message;
+      Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+      }).then(function (result) {
+        if (result.isConfirmed) {
+          axios["delete"]("api/guests/" + id).then(function (res) {
+            Swal.fire('Deleted!', res.data.message, 'success');
 
-        _this2.getGuests();
+            _this2.getGuests();
+          });
+        }
       });
     }
   }
@@ -29078,7 +29087,7 @@ var render = function () {
                   "label",
                   {
                     staticClass: "col-md-4 col-form-label text-md-right",
-                    attrs: { for: "province" },
+                    attrs: { for: "province_code" },
                   },
                   [_vm._v("Province")]
                 ),
@@ -29091,12 +29100,12 @@ var render = function () {
                         {
                           name: "model",
                           rawName: "v-model",
-                          value: _vm.guest.province,
-                          expression: "guest.province",
+                          value: _vm.guest.province_code,
+                          expression: "guest.province_code",
                         },
                       ],
                       staticClass: "form-control",
-                      attrs: { name: "province" },
+                      attrs: { name: "province_code" },
                       on: {
                         change: [
                           function ($event) {
@@ -29110,26 +29119,33 @@ var render = function () {
                               })
                             _vm.$set(
                               _vm.guest,
-                              "province",
+                              "province_code",
                               $event.target.multiple
                                 ? $$selectedVal
                                 : $$selectedVal[0]
                             )
                           },
                           function ($event) {
-                            return _vm.getProvinces()
+                            return _vm.getCities()
                           },
                         ],
                       },
                     },
                     _vm._l(_vm.provinces, function (province) {
-                      return _c("option", { key: province.id }, [
-                        _vm._v(
-                          "\n                                    " +
-                            _vm._s(province.name) +
-                            "\n                                "
-                        ),
-                      ])
+                      return _c(
+                        "option",
+                        {
+                          key: province.id,
+                          domProps: { value: province.code },
+                        },
+                        [
+                          _vm._v(
+                            "\n                                    " +
+                              _vm._s(province.name) +
+                              "\n                                "
+                          ),
+                        ]
+                      )
                     }),
                     0
                   ),
@@ -29141,7 +29157,7 @@ var render = function () {
                   "label",
                   {
                     staticClass: "col-md-4 col-form-label text-md-right",
-                    attrs: { for: "city" },
+                    attrs: { for: "city_code" },
                   },
                   [_vm._v("City")]
                 ),
@@ -29154,45 +29170,44 @@ var render = function () {
                         {
                           name: "model",
                           rawName: "v-model",
-                          value: _vm.guest.city,
-                          expression: "guest.city",
+                          value: _vm.guest.city_code,
+                          expression: "guest.city_code",
                         },
                       ],
                       staticClass: "form-control",
-                      attrs: { name: "city" },
+                      attrs: { name: "city_code" },
                       on: {
-                        change: [
-                          function ($event) {
-                            var $$selectedVal = Array.prototype.filter
-                              .call($event.target.options, function (o) {
-                                return o.selected
-                              })
-                              .map(function (o) {
-                                var val = "_value" in o ? o._value : o.value
-                                return val
-                              })
-                            _vm.$set(
-                              _vm.guest,
-                              "city",
-                              $event.target.multiple
-                                ? $$selectedVal
-                                : $$selectedVal[0]
-                            )
-                          },
-                          function ($event) {
-                            return _vm.getCities()
-                          },
-                        ],
+                        change: function ($event) {
+                          var $$selectedVal = Array.prototype.filter
+                            .call($event.target.options, function (o) {
+                              return o.selected
+                            })
+                            .map(function (o) {
+                              var val = "_value" in o ? o._value : o.value
+                              return val
+                            })
+                          _vm.$set(
+                            _vm.guest,
+                            "city_code",
+                            $event.target.multiple
+                              ? $$selectedVal
+                              : $$selectedVal[0]
+                          )
+                        },
                       },
                     },
                     _vm._l(_vm.cities, function (city) {
-                      return _c("option", { key: city.id }, [
-                        _vm._v(
-                          "\n                                    " +
-                            _vm._s(city.name) +
-                            "\n                                "
-                        ),
-                      ])
+                      return _c(
+                        "option",
+                        { key: city.id, domProps: { value: city.code } },
+                        [
+                          _vm._v(
+                            "\n                                    " +
+                              _vm._s(city.name) +
+                              "\n                                "
+                          ),
+                        ]
+                      )
                     }),
                     0
                   ),
@@ -29279,22 +29294,8 @@ var render = function () {
   var _c = _vm._self._c || _h
   return _c("div", [
     _c("div", { staticClass: "col-xl-12 col-lg-12" }, [
-      _vm.showMessage
-        ? _c(
-            "div",
-            {
-              staticClass: "alert alert-warning alert-dismissible fade show",
-              attrs: { role: "alert" },
-            },
-            [
-              _vm._v("\n            " + _vm._s(_vm.message) + "\n            "),
-              _vm._m(0),
-            ]
-          )
-        : _vm._e(),
-      _vm._v(" "),
       _c("div", { staticClass: "card shadow mb-4" }, [
-        _vm._m(1),
+        _vm._m(0),
         _vm._v(" "),
         _c("div", { staticClass: "card-body" }, [
           _c("div", { staticClass: "row" }, [
@@ -29320,7 +29321,7 @@ var render = function () {
           ]),
           _vm._v(" "),
           _c("table", { staticClass: "table table-hover table-bordered" }, [
-            _vm._m(2),
+            _vm._m(1),
             _vm._v(" "),
             _c(
               "tbody",
@@ -29336,9 +29337,9 @@ var render = function () {
                   _vm._v(" "),
                   _c("td", [_vm._v(_vm._s(guest.address))]),
                   _vm._v(" "),
-                  _c("td", [_vm._v(_vm._s(guest.province))]),
+                  _c("td", [_vm._v(_vm._s(guest.provinces.name))]),
                   _vm._v(" "),
-                  _c("td", [_vm._v(_vm._s(guest.city))]),
+                  _c("td", [_vm._v(_vm._s(guest.cities.name))]),
                 ])
               }),
               0
@@ -29350,23 +29351,6 @@ var render = function () {
   ])
 }
 var staticRenderFns = [
-  function () {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "button",
-      {
-        staticClass: "close",
-        attrs: {
-          type: "button",
-          "data-dismiss": "alert",
-          "aria-label": "Close",
-        },
-      },
-      [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
-    )
-  },
   function () {
     var _vm = this
     var _h = _vm.$createElement
@@ -29648,7 +29632,7 @@ var render = function () {
                   "label",
                   {
                     staticClass: "col-md-4 col-form-label text-md-right",
-                    attrs: { for: "province" },
+                    attrs: { for: "province_code" },
                   },
                   [_vm._v("Province")]
                 ),
@@ -29661,12 +29645,12 @@ var render = function () {
                         {
                           name: "model",
                           rawName: "v-model",
-                          value: _vm.guest.province,
-                          expression: "guest.province",
+                          value: _vm.guest.province_code,
+                          expression: "guest.province_code",
                         },
                       ],
                       staticClass: "form-control",
-                      attrs: { name: "province" },
+                      attrs: { name: "province_code" },
                       on: {
                         change: [
                           function ($event) {
@@ -29680,26 +29664,33 @@ var render = function () {
                               })
                             _vm.$set(
                               _vm.guest,
-                              "province",
+                              "province_code",
                               $event.target.multiple
                                 ? $$selectedVal
                                 : $$selectedVal[0]
                             )
                           },
                           function ($event) {
-                            return _vm.getProvinces()
+                            return _vm.getCities()
                           },
                         ],
                       },
                     },
                     _vm._l(_vm.provinces, function (province) {
-                      return _c("option", { key: province.id }, [
-                        _vm._v(
-                          "\n                                    " +
-                            _vm._s(province.name) +
-                            "\n                                "
-                        ),
-                      ])
+                      return _c(
+                        "option",
+                        {
+                          key: province.code,
+                          domProps: { value: province.code },
+                        },
+                        [
+                          _vm._v(
+                            "\n                                    " +
+                              _vm._s(province.name) +
+                              "\n                                "
+                          ),
+                        ]
+                      )
                     }),
                     0
                   ),
@@ -29711,7 +29702,7 @@ var render = function () {
                   "label",
                   {
                     staticClass: "col-md-4 col-form-label text-md-right",
-                    attrs: { for: "city" },
+                    attrs: { for: "city_code" },
                   },
                   [_vm._v("City")]
                 ),
@@ -29724,45 +29715,44 @@ var render = function () {
                         {
                           name: "model",
                           rawName: "v-model",
-                          value: _vm.guest.city,
-                          expression: "guest.city",
+                          value: _vm.guest.city_code,
+                          expression: "guest.city_code",
                         },
                       ],
                       staticClass: "form-control",
-                      attrs: { name: "city" },
+                      attrs: { name: "city_code" },
                       on: {
-                        change: [
-                          function ($event) {
-                            var $$selectedVal = Array.prototype.filter
-                              .call($event.target.options, function (o) {
-                                return o.selected
-                              })
-                              .map(function (o) {
-                                var val = "_value" in o ? o._value : o.value
-                                return val
-                              })
-                            _vm.$set(
-                              _vm.guest,
-                              "city",
-                              $event.target.multiple
-                                ? $$selectedVal
-                                : $$selectedVal[0]
-                            )
-                          },
-                          function ($event) {
-                            return _vm.getCities()
-                          },
-                        ],
+                        change: function ($event) {
+                          var $$selectedVal = Array.prototype.filter
+                            .call($event.target.options, function (o) {
+                              return o.selected
+                            })
+                            .map(function (o) {
+                              var val = "_value" in o ? o._value : o.value
+                              return val
+                            })
+                          _vm.$set(
+                            _vm.guest,
+                            "city_code",
+                            $event.target.multiple
+                              ? $$selectedVal
+                              : $$selectedVal[0]
+                          )
+                        },
                       },
                     },
                     _vm._l(_vm.cities, function (city) {
-                      return _c("option", { key: city.id }, [
-                        _vm._v(
-                          "\n                                    " +
-                            _vm._s(city.name) +
-                            "\n                                "
-                        ),
-                      ])
+                      return _c(
+                        "option",
+                        { key: city.code, domProps: { value: city.code } },
+                        [
+                          _vm._v(
+                            "\n                                    " +
+                              _vm._s(city.name) +
+                              "\n                                "
+                          ),
+                        ]
+                      )
                     }),
                     0
                   ),
@@ -30066,7 +30056,7 @@ var render = function () {
                   "label",
                   {
                     staticClass: "col-md-4 col-form-label text-md-right",
-                    attrs: { for: "province" },
+                    attrs: { for: "province_code" },
                   },
                   [_vm._v("Province")]
                 ),
@@ -30079,12 +30069,12 @@ var render = function () {
                         {
                           name: "model",
                           rawName: "v-model",
-                          value: _vm.guest.province,
-                          expression: "guest.province",
+                          value: _vm.guest.province_code,
+                          expression: "guest.province_code",
                         },
                       ],
                       staticClass: "form-control",
-                      attrs: { name: "province" },
+                      attrs: { name: "province_code" },
                       on: {
                         change: [
                           function ($event) {
@@ -30098,26 +30088,33 @@ var render = function () {
                               })
                             _vm.$set(
                               _vm.guest,
-                              "province",
+                              "province_code",
                               $event.target.multiple
                                 ? $$selectedVal
                                 : $$selectedVal[0]
                             )
                           },
                           function ($event) {
-                            return _vm.getProvinces()
+                            return _vm.getCities()
                           },
                         ],
                       },
                     },
                     _vm._l(_vm.provinces, function (province) {
-                      return _c("option", { key: province.id }, [
-                        _vm._v(
-                          "\n                                    " +
-                            _vm._s(province.name) +
-                            "\n                                "
-                        ),
-                      ])
+                      return _c(
+                        "option",
+                        {
+                          key: province.id,
+                          domProps: { value: province.code },
+                        },
+                        [
+                          _vm._v(
+                            "\n                                    " +
+                              _vm._s(province.name) +
+                              "\n                                "
+                          ),
+                        ]
+                      )
                     }),
                     0
                   ),
@@ -30129,7 +30126,7 @@ var render = function () {
                   "label",
                   {
                     staticClass: "col-md-4 col-form-label text-md-right",
-                    attrs: { for: "city" },
+                    attrs: { for: "city_code" },
                   },
                   [_vm._v("City")]
                 ),
@@ -30142,45 +30139,44 @@ var render = function () {
                         {
                           name: "model",
                           rawName: "v-model",
-                          value: _vm.guest.city,
-                          expression: "guest.city",
+                          value: _vm.guest.city_code,
+                          expression: "guest.city_code",
                         },
                       ],
                       staticClass: "form-control",
-                      attrs: { name: "city" },
+                      attrs: { name: "city_code" },
                       on: {
-                        change: [
-                          function ($event) {
-                            var $$selectedVal = Array.prototype.filter
-                              .call($event.target.options, function (o) {
-                                return o.selected
-                              })
-                              .map(function (o) {
-                                var val = "_value" in o ? o._value : o.value
-                                return val
-                              })
-                            _vm.$set(
-                              _vm.guest,
-                              "city",
-                              $event.target.multiple
-                                ? $$selectedVal
-                                : $$selectedVal[0]
-                            )
-                          },
-                          function ($event) {
-                            return _vm.getCities()
-                          },
-                        ],
+                        change: function ($event) {
+                          var $$selectedVal = Array.prototype.filter
+                            .call($event.target.options, function (o) {
+                              return o.selected
+                            })
+                            .map(function (o) {
+                              var val = "_value" in o ? o._value : o.value
+                              return val
+                            })
+                          _vm.$set(
+                            _vm.guest,
+                            "city_code",
+                            $event.target.multiple
+                              ? $$selectedVal
+                              : $$selectedVal[0]
+                          )
+                        },
                       },
                     },
                     _vm._l(_vm.cities, function (city) {
-                      return _c("option", { key: city.id }, [
-                        _vm._v(
-                          "\n                                    " +
-                            _vm._s(city.name) +
-                            "\n                                "
-                        ),
-                      ])
+                      return _c(
+                        "option",
+                        { key: city.id, domProps: { value: city.code } },
+                        [
+                          _vm._v(
+                            "\n                                    " +
+                              _vm._s(city.name) +
+                              "\n                                "
+                          ),
+                        ]
+                      )
                     }),
                     0
                   ),
@@ -30267,22 +30263,8 @@ var render = function () {
   var _c = _vm._self._c || _h
   return _c("div", [
     _c("div", { staticClass: "col-xl-12 col-lg-12" }, [
-      _vm.showMessage
-        ? _c(
-            "div",
-            {
-              staticClass: "alert alert-warning alert-dismissible fade show",
-              attrs: { role: "alert" },
-            },
-            [
-              _vm._v("\n            " + _vm._s(_vm.message) + "\n            "),
-              _vm._m(0),
-            ]
-          )
-        : _vm._e(),
-      _vm._v(" "),
       _c("div", { staticClass: "card shadow mb-4" }, [
-        _vm._m(1),
+        _vm._m(0),
         _vm._v(" "),
         _c("div", { staticClass: "card-body" }, [
           _c("div", { staticClass: "row" }, [
@@ -30308,7 +30290,7 @@ var render = function () {
           ]),
           _vm._v(" "),
           _c("table", { staticClass: "table table-hover table-bordered" }, [
-            _vm._m(2),
+            _vm._m(1),
             _vm._v(" "),
             _c(
               "tbody",
@@ -30358,9 +30340,9 @@ var render = function () {
                   _vm._v(" "),
                   _c("td", [_vm._v(_vm._s(guest.address))]),
                   _vm._v(" "),
-                  _c("td", [_vm._v(_vm._s(guest.province))]),
+                  _c("td", [_vm._v(_vm._s(guest.provinces.name))]),
                   _vm._v(" "),
-                  _c("td", [_vm._v(_vm._s(guest.city))]),
+                  _c("td", [_vm._v(_vm._s(guest.cities.name))]),
                 ])
               }),
               0
@@ -30372,23 +30354,6 @@ var render = function () {
   ])
 }
 var staticRenderFns = [
-  function () {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "button",
-      {
-        staticClass: "close",
-        attrs: {
-          type: "button",
-          "data-dismiss": "alert",
-          "aria-label": "Close",
-        },
-      },
-      [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
-    )
-  },
   function () {
     var _vm = this
     var _h = _vm.$createElement

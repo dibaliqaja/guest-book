@@ -25,7 +25,7 @@ class GuestBookController extends Controller
      */
     public function index()
     {
-        $guests = GuestBook::latest()->get();
+        $guests = GuestBook::with(['provinces', 'cities'])->latest()->get();
 
         return response([
             'message' => 'List All Guest Books',
